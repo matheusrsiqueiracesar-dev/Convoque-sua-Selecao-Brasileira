@@ -59,8 +59,8 @@ code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
   4) Máximo: 26 jogadores selecionados e 3 goleiros.
 */
 const SITE_CONFIG = {
-  siteName: "Monte a sua também",
-  siteUrl: "seu-site-aqui.com",
+  siteName: "Siga-nos no Instagram",
+  siteUrl: "@montesuaselecao",
   pageTitle: "Monte sua Convocação da Seleção",
   subtitle: "Escolha 26 nomes, gere sua arte e compartilhe no WhatsApp, Instagram e Facebook.",
 };
@@ -68,32 +68,31 @@ const SITE_CONFIG = {
 const PLAYERS = [
   { name: "Alisson", sector: "Goleiros", club: "Liverpool" },
   { name: "Bento", sector: "Goleiros", club: "Al-Nassr" },
-  { name: "Ederson", sector: "Goleiros", club: "Manchester City" },
+  { name: "Ederson", sector: "Goleiros", club: "Fenerbache" },
   { name: "Hugo Souza", sector: "Goleiros", club: "Corinthians" },
   { name: "Léo Jardim", sector: "Goleiros", club: "Vasco da Gama" },
-  { name: "Lucas Perri", sector: "Goleiros", club: "Lyon" },
-  { name: "Rafael", sector: "Goleiros", club: "São Paulo" },
-  { name: "Weverton", sector: "Goleiros", club: "Palmeiras" },
+  { name: "Lucas Perri", sector: "Goleiros", club: "Leeds" },
+  { name: "Fabio", sector: "Goleiros", club: "Fluminense" },
+  { name: "Carlos Miguel", sector: "Goleiros", club: "Palmeiras" },
 
-  { name: "Abner", sector: "Defensores", club: "Lyon" },
+  { name: "Abner Vinícius", sector: "Defensores", club: "Lyon" },
   { name: "Alex Sandro", sector: "Defensores", club: "Flamengo" },
-  { name: "Ayrton Lucas", sector: "Defensores", club: "Flamengo" },
   { name: "Caio Henrique", sector: "Defensores", club: "Monaco" },
   { name: "Carlos Augusto", sector: "Defensores", club: "Inter de Milão" },
   { name: "Danilo (defensor)", sector: "Defensores", club: "Flamengo" },
   { name: "Douglas Santos", sector: "Defensores", club: "Zenit" },
-  { name: "Emerson Royal", sector: "Defensores", club: "Milan" },
-  { name: "Guilherme Arana", sector: "Defensores", club: "Atlético-MG" },
+  { name: "Emerson Royal", sector: "Defensores", club: "Flamengo" },
+  { name: "Guilherme Arana", sector: "Defensores", club: "Fluminense" },
   { name: "Luciano Juba", sector: "Defensores", club: "Bahia" },
   { name: "Paulo Henrique", sector: "Defensores", club: "Vasco da Gama" },
-  { name: "Renan Lodi", sector: "Defensores", club: "Al-Hilal" },
+  { name: "Renan Lodi", sector: "Defensores", club: "Atlético-MG" },
   { name: "Vanderson", sector: "Defensores", club: "Monaco" },
   { name: "Wendell", sector: "Defensores", club: "São Paulo" },
   { name: "Wesley", sector: "Defensores", club: "Flamengo" },
   { name: "Yan Couto", sector: "Defensores", club: "Borussia Dortmund" },
   { name: "Adryelson", sector: "Defensores", club: "Al-Wasl" },
   { name: "Alexsandro", sector: "Defensores", club: "Lille" },
-  { name: "Beraldo", sector: "Defensores", club: "Paris Saint-Germain" },
+  { name: "Lucas Beraldo", sector: "Defensores", club: "Paris Saint-Germain" },
   { name: "Bremer", sector: "Defensores", club: "Juventus" },
   { name: "Éder Militão", sector: "Defensores", club: "Real Madrid" },
   { name: "Fabrício Bruno", sector: "Defensores", club: "Cruzeiro" },
@@ -105,7 +104,8 @@ const PLAYERS = [
   { name: "Murillo", sector: "Defensores", club: "Nottingham Forest" },
   { name: "Murilo", sector: "Defensores", club: "Palmeiras" },
   { name: "Nino", sector: "Defensores", club: "Zenit" },
-  { name: "Vitor Reis", sector: "Defensores", club: "Manchester City" },
+  { name: "Vitor Reis", sector: "Defensores", club: "Girona" },
+  { name: "Thiago Silva", sector: "Defensores", club: "Porto" },
 
   { name: "Andreas Pereira", sector: "Meio-campistas", club: "Palmeiras" },
   { name: "Andrey Santos", sector: "Meio-campistas", club: "Chelsea" },
@@ -113,25 +113,23 @@ const PLAYERS = [
   { name: "Bruno Guimarães", sector: "Meio-campistas", club: "Newcastle" },
   { name: "Casemiro", sector: "Meio-campistas", club: "Manchester United" },
   { name: "Danilo (meio-campista)", sector: "Meio-campistas", club: "Botafogo" },
-  { name: "Douglas Luiz", sector: "Meio-campistas", club: "Juventus" },
+  { name: "Douglas Luiz", sector: "Meio-campistas", club: "Aston Villa" },
   { name: "Éderson", sector: "Meio-campistas", club: "Atalanta" },
   { name: "Fabinho", sector: "Meio-campistas", club: "Al-Ittihad" },
   { name: "Gabriel Sara", sector: "Meio-campistas", club: "Galatasaray" },
-  { name: "Gerson", sector: "Meio-campistas", club: "Flamengo" },
+  { name: "Gerson", sector: "Meio-campistas", club: "Cruzeiro" },
   { name: "Jean Lucas", sector: "Meio-campistas", club: "Bahia" },
   { name: "Joelinton", sector: "Meio-campistas", club: "Newcastle" },
   { name: "João Gomes", sector: "Meio-campistas", club: "Wolverhampton" },
   { name: "Lucas Paquetá", sector: "Meio-campistas", club: "Flamengo" },
   { name: "Neymar", sector: "Meio-campistas", club: "Santos" },
-  { name: "Pablo Maia", sector: "Meio-campistas", club: "São Paulo" },
   { name: "Pepê", sector: "Meio-campistas", club: "Porto" },
-  { name: "Raphael Veiga", sector: "Meio-campistas", club: "Palmeiras" },
-  { name: "Savinho", sector: "Meio-campistas", club: "Manchester City" },
-  { name: "Vitinho", sector: "Meio-campistas", club: "Internacional" },
+  { name: "Raphael Veiga", sector: "Meio-campistas", club: "América MX" },
+  { name: "Matheus Pereira", sector: "Meio-campistas", club: "Cruzeiro" },
 
   { name: "Antony", sector: "Atacantes", club: "Real Betis" },
   { name: "David Neres", sector: "Atacantes", club: "Napoli" },
-  { name: "Endrick", sector: "Atacantes", club: "Real Madrid" },
+  { name: "Endrick", sector: "Atacantes", club: "Lyon" },
   { name: "Estevão", sector: "Atacantes", club: "Chelsea" },
   { name: "Evanilson", sector: "Atacantes", club: "Bournemouth" },
   { name: "Gabriel Jesus", sector: "Atacantes", club: "Arsenal" },
@@ -142,15 +140,15 @@ const PLAYERS = [
   { name: "Kaio Jorge", sector: "Atacantes", club: "Cruzeiro" },
   { name: "Luiz Henrique", sector: "Atacantes", club: "Zenit" },
   { name: "Matheus Cunha", sector: "Atacantes", club: "Manchester United" },
-  { name: "Paulinho", sector: "Atacantes", club: "Palmeiras" },
   { name: "Pedro", sector: "Atacantes", club: "Flamengo" },
   { name: "Raphinha", sector: "Atacantes", club: "Barcelona" },
-  { name: "Rayan", sector: "Atacantes", club: "Vasco da Gama" },
+  { name: "Yuri Alberto", sector: "Atacantes", club: "Corinthians" },
+  { name: "Rayan", sector: "Atacantes", club: "Bournemouth" },
   { name: "Richarlison", sector: "Atacantes", club: "Tottenham" },
-  { name: "Rodrygo", sector: "Atacantes", club: "Real Madrid" },
-  { name: "Samuel Lino", sector: "Atacantes", club: "Atlético de Madrid" },
-  { name: "Vini Jr.", sector: "Atacantes", club: "Real Madrid" },
+  { name: "Samuel Lino", sector: "Atacantes", club: "Flamengo" },
+  { name: "Vini Jr", sector: "Atacantes", club: "Real Madrid" },
   { name: "Vitor Roque", sector: "Atacantes", club: "Palmeiras" },
+  { name: "Savinho", sector: "Atacantes", club: "Manchester City" },
 ];
 
 const THEMES = [
@@ -175,8 +173,7 @@ const THEMES = [
     <div class="panel"><div id="playersRoot"></div></div>
     <div class="summary panel"><h3>Sua lista</h3><div class="count" id="countLabel">0/26 selecionados • 0/3 goleiros</div><div id="selectedRoot"></div><div class="export-actions"><button id="generateBtn">Gerar arte</button><button class="secondary" id="downloadBtn">Baixar</button><button class="ghost" id="shareBtn">Compartilhar</button><button class="ghost" id="clearBtn">Limpar</button></div><div class="note">A arte agora usa áreas fixas por setor e reduz o tamanho do texto automaticamente para não sobrepor nomes. Máximo de 3 goleiros e 26 nomes no total.</div></div>
   </div>
-  <div class="preview-box"><div class="mini-preview"><strong>Preview da arte</strong><canvas id="previewCanvas"></canvas></div><div class="panel manual"><h3>Como editar manualmente</h3><div>Abra o arquivo <code>index.html</code> em qualquer editor de texto.</div><div>Procure <code>const PLAYERS = [</code> para trocar clube, nome ou adicionar jogadores.</div><div>Exemplo: <code>{ name: "NOME", sector: "Atacantes", club: "CLUBE" },</code></div><div style="margin-top:8px">Também dá para editar o nome do site e texto do topo em <code>const SITE_CONFIG</code>.</div></div></div>
-</div>
+  <div class="preview-box"><div class="mini-preview"><strong>Preview da arte</strong><canvas id="previewCanvas"></canvas></div><div class="panel manual"><h3></div>
 <script>
 const sectors = ["Goleiros","Defensores","Meio-campistas","Atacantes"];
 let selected = [];
