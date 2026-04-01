@@ -236,23 +236,29 @@ const THEMES = [
         <div><span class="badge">Novo</span> Nome da pessoa aparece na arte e no link compartilhável.</div>
         <div><span class="badge">Novo</span> Botão para <strong>publicar no mural</strong> do próprio site.</div>
         <div><span class="badge">Novo</span> Cada convocação pode virar uma página por link no próprio site.</div>
-        <div class="small" style="margin-top:12px">Observação importante: o mural publicado aqui usa o próprio navegador como base de armazenamento.</div>
+        <div class="small" style="margin-top:12px">Observação importante: agora o mural pode ser ligado ao Supabase para salvar online e gerar links reais.</div>
       </div>
     </div>
   </div>
 
   <div class="mural panel" id="mural">
     <h3>Convocações publicadas</h3>
-    <div class="small" style="margin-bottom:10px">Aqui aparecem as convocações que foram publicadas neste navegador. É a base da experiência social do site.</div>
+    <div class="small" style="margin-bottom:10px">Aqui aparecem as convocações publicadas no Supabase. Assim o mural fica online para todo mundo ver.</div>
     <div id="muralRoot"></div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const sectors = ["Goleiros","Defensores","Meio-campistas","Atacantes"];
-const STORAGE_KEY = "convocacoes_publicadas_v1";
+const SUPABASE_URL = "https://xbhupsdbwfthkggvokgy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_xZg9PbaAGIvGlwsF_RI36g_EYrsXgOl";
+const SUPABASE_TABLE = "convocacoes";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let selected = [];
 let activeTheme = THEMES[Math.floor(Math.random()*THEMES.length)];
+let currentPublishedId = null;
+let currentPublishedSignature = null;
 
 const personNameEl = document.getElementById('personName');
 const personHandleEl = document.getElementById('personHandle');
@@ -324,23 +330,84 @@ function decodePayload(str){
 function hasPublicOrigin(){
   return window.location.protocol === 'http:' || window.location.protocol === 'https:';
 }
+function buildShareUrlById(id){
+  if(!hasPublicOrigin() || !id) return '';
+  return window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(id);
+}
 function buildShareUrl(data){
-  if(!hasPublicOrigin()) return '';
-  const payload = encodePayload(data);
-  return window.location.origin + window.location.pathname + '?shared=' + encodeURIComponent(payload);
+  if(!hasPublicOrigin() || !data?.id) return '';
+  return buildShareUrlById(data.id);
 }
 function updateShareBox(text){
   shareUrlBox.textContent = text;
 }
-function loadMural(){
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  } catch(e) {
-    return [];
-  }
+function selectionSignature(data){
+  return JSON.stringify({
+    title: data.title || '',
+    personName: data.personName || '',
+    personHandle: data.personHandle || '',
+    format: data.format || 'story',
+    themeIndex: data.themeIndex ?? 0,
+    players: (data.players || []).map(p => ({name:p.name, sector:p.sector, club:p.club}))
+  });
 }
-function saveMural(items){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(0,24)));
+async function fetchMural(){
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .select('id,title,person_name,person_handle,format,theme_index,players,created_at')
+    .order('created_at', { ascending: false })
+    .limit(24);
+  if(error) throw error;
+  return (data || []).map(mapRowToConvocacao);
+}
+async function fetchConvocacaoById(id){
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .select('id,title,person_name,person_handle,format,theme_index,players,created_at')
+    .eq('id', id)
+    .single();
+  if(error) throw error;
+  return mapRowToConvocacao(data);
+}
+function mapRowToConvocacao(row){
+  return {
+    id: row.id,
+    title: row.title,
+    personName: row.person_name,
+    personHandle: row.person_handle,
+    format: row.format,
+    themeIndex: row.theme_index,
+    players: Array.isArray(row.players) ? row.players : [],
+    createdAt: row.created_at
+  };
+}
+async function insertConvocacao(data){
+  const payload = {
+    title: data.title,
+    person_name: data.personName,
+    person_handle: data.personHandle,
+    format: data.format,
+    theme_index: data.themeIndex,
+    players: data.players
+  };
+  const { data: inserted, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .insert(payload)
+    .select('id,title,person_name,person_handle,format,theme_index,players,created_at')
+    .single();
+  if(error) throw error;
+  return mapRowToConvocacao(inserted);
+}
+async function ensurePublishedCurrent(){
+  const data = getSelectionData();
+  const signature = selectionSignature(data);
+  if(currentPublishedId && currentPublishedSignature === signature){
+    return { ...data, id: currentPublishedId };
+  }
+  const saved = await insertConvocacao(data);
+  currentPublishedId = saved.id;
+  currentPublishedSignature = signature;
+  return saved;
 }
 function renderPlayers(){
   const list=filteredPlayers();
@@ -506,49 +573,69 @@ function copyText(text){
   }
   navigator.clipboard.writeText(text).then(()=>alert('Link copiado!')).catch(()=>alert(text));
 }
-function renderMural(){
-  const items = loadMural();
-  if(!items.length) {
-    muralRoot.innerHTML = '<div class="empty">Ainda não há convocações publicadas neste navegador. Publique a primeira acima.</div>';
-    return;
+async function renderMural(){
+  muralRoot.innerHTML = '<div class="empty">Carregando convocações...</div>';
+  try {
+    const items = await fetchMural();
+    if(!items.length) {
+      muralRoot.innerHTML = '<div class="empty">Ainda não há convocações publicadas. Publique a primeira acima.</div>';
+      return;
+    }
+    muralRoot.innerHTML = `<div class="mural-grid">${items.map((item, idx)=>`
+      <div class="post">
+        <div class="post-head">
+          <strong>${escapeHtml(item.personName || 'Sem nome')}</strong>
+          <span>${escapeHtml(item.personHandle || 'Sem @')} • ${new Date(item.createdAt).toLocaleString('pt-BR')}</span>
+        </div>
+        <canvas id="postCanvas_${idx}"></canvas>
+        <div class="post-actions">
+          <button class="ghost" data-open="${idx}">Abrir link</button>
+          <button class="ghost" data-copy="${idx}">Copiar link</button>
+        </div>
+      </div>
+    `).join('')}</div>`;
+    items.forEach((item, idx)=>{
+      const c = document.getElementById(`postCanvas_${idx}`);
+      drawArtWithData(c, item, false);
+    });
+    muralRoot.querySelectorAll('[data-open]').forEach(btn=>btn.onclick=()=>window.open(buildShareUrl(items[Number(btn.dataset.open)]), '_blank'));
+    muralRoot.querySelectorAll('[data-copy]').forEach(btn=>btn.onclick=()=>copyText(buildShareUrl(items[Number(btn.dataset.copy)])));
+  } catch(error) {
+    console.error(error);
+    muralRoot.innerHTML = '<div class="empty">Não foi possível carregar o mural do Supabase. Confira a tabela e as políticas de acesso.</div>';
   }
-  muralRoot.innerHTML = `<div class="mural-grid">${items.map((item, idx)=>`
-    <div class="post">
-      <div class="post-head">
-        <strong>${escapeHtml(item.personName || 'Sem nome')}</strong>
-        <span>${escapeHtml(item.personHandle || 'Sem @')} • ${new Date(item.createdAt).toLocaleString('pt-BR')}</span>
-      </div>
-      <canvas id="postCanvas_${idx}"></canvas>
-      <div class="post-actions">
-        <button class="ghost" data-open="${idx}">Abrir link</button>
-        <button class="ghost" data-copy="${idx}">Copiar link</button>
-      </div>
-    </div>
-  `).join('')}</div>`;
-  items.forEach((item, idx)=>{
-    const c = document.getElementById(`postCanvas_${idx}`);
-    drawArtWithData(c, item, false);
-  });
-  muralRoot.querySelectorAll('[data-open]').forEach(btn=>btn.onclick=()=>window.open(buildShareUrl(items[Number(btn.dataset.open)]), '_blank'));
-  muralRoot.querySelectorAll('[data-copy]').forEach(btn=>btn.onclick=()=>copyText(buildShareUrl(items[Number(btn.dataset.copy)])));
 }
-function publishCurrent(){
+async function publishCurrent(){
   if(!validateForPublish()) return;
-  const data = getSelectionData();
-  const items = loadMural();
-  items.unshift(data);
-  saveMural(items);
-  const url = buildShareUrl(data);
-  if(url) updateShareBox(url);
-  else updateShareBox('Sua convocação foi publicada no mural deste navegador. Para gerar um link único, abra a versão online do site no GitHub Pages.');
-  renderMural();
-  alert('Convocação publicada no mural do site neste navegador.');
+  try {
+    const saved = await ensurePublishedCurrent();
+    const url = buildShareUrl(saved);
+    updateShareBox(url || 'Sua convocação foi publicada, mas o link só funciona no site online.');
+    await renderMural();
+    alert('Convocação publicada no mural online.');
+  } catch(error) {
+    console.error(error);
+    alert('Não consegui publicar no Supabase. Verifique a tabela, as políticas e a publishable key.');
+  }
 }
-function showSharedIfAny(){
+async function showSharedIfAny(){
   const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
   const payload = params.get('shared');
-  if(!payload) return;
-  const data = decodePayload(payload);
+  let data = null;
+
+  if(id){
+    try {
+      data = await fetchConvocacaoById(id);
+    } catch(error) {
+      console.error(error);
+    }
+  }
+
+  if(!data && payload){
+    data = decodePayload(payload);
+  }
+
   if(!data || !Array.isArray(data.players)) return;
   document.getElementById('montador').insertAdjacentHTML('beforebegin', `
     <div class="viewer-card panel">
@@ -574,28 +661,46 @@ document.getElementById('generateBtn').onclick = ()=>drawPreview();
 document.getElementById('downloadBtn').onclick = ()=>{if(!validateForPublish()) return; drawArt(document.createElement('canvas'), true);};
 document.getElementById('shareBtn').onclick = async ()=>{
   if(!validateForPublish()) return;
-  const data = getSelectionData();
-  const url = buildShareUrl(data);
-  shareUrlBox.textContent = url;
-  const c=document.createElement('canvas');
-  drawArtWithData(c, data, false);
-  c.toBlob(async blob=>{
-    const file=new File([blob],`convocacao-${data.format}.png`,{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file], title:'Minha Convocação', text:url});}
-      catch(e){copyText(url);}
-    } else {
-      copyText(url);
-    }
-  });
+  try {
+    const saved = await ensurePublishedCurrent();
+    const url = buildShareUrl(saved);
+    shareUrlBox.textContent = url;
+    const c=document.createElement('canvas');
+    drawArtWithData(c, saved, false);
+    c.toBlob(async blob=>{
+      const file=new File([blob],`convocacao-${saved.format}.png`,{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file], title:'Minha Convocação', text:url});}
+        catch(e){copyText(url);}
+      } else {
+        copyText(url);
+      }
+    });
+  } catch(error) {
+    console.error(error);
+    alert('Não consegui gerar o compartilhamento pelo Supabase.');
+  }
 };
 document.getElementById('publishBtn').onclick = publishCurrent;
-document.getElementById('copyLinkBtn').onclick = ()=>{ if(!validateForPublish()) return; const data=getSelectionData(); const url=buildShareUrl(data); shareUrlBox.textContent=url; copyText(url); };
-document.getElementById('clearBtn').onclick = ()=>{selected=[]; renderPlayers(); renderSelected();};
-showSharedIfAny();
-renderPlayers();
-renderSelected();
-renderMural();
+document.getElementById('copyLinkBtn').onclick = async ()=>{
+  if(!validateForPublish()) return;
+  try {
+    const saved = await ensurePublishedCurrent();
+    const url = buildShareUrl(saved);
+    shareUrlBox.textContent = url;
+    copyText(url);
+  } catch(error) {
+    console.error(error);
+    alert('Não consegui gerar o link único no Supabase.');
+  }
+};
+document.getElementById('clearBtn').onclick = ()=>{selected=[]; currentPublishedId=null; currentPublishedSignature=null; renderPlayers(); renderSelected();};
+(async ()=>{
+  await showSharedIfAny();
+  renderPlayers();
+  renderSelected();
+  await renderMural();
+})();
 </script>
 </body>
 </html>
