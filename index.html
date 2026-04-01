@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Minha Convocação do Brasil</title>
+<style>
+:root{--bg:#062d19;--card:#0d3f25;--muted:#d7e3d6;--text:#f8f8f8;--accent:#f5c400}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#06331d,#021f11);color:var(--text)}
+.wrap{max-width:1200px;margin:0 auto;padding:20px}
+.hero{padding:16px 0 8px}
+h1{margin:0 0 8px;font-size:clamp(28px,4vw,48px)}
+.sub{color:#d7e3d6;opacity:.95}
+.controls,.grid,.summary,.export-actions{display:grid;gap:14px}
+.controls{grid-template-columns:1.2fr .9fr .9fr;align-items:end;margin:20px 0}
+label{display:block;font-size:13px;margin-bottom:6px;color:#d8ead8}
+input,select,button{width:100%;border:none;border-radius:14px;padding:14px 16px;font-size:15px}
+input,select{background:#f5f7f6;color:#122017}
+button{cursor:pointer;background:var(--accent);color:#14210d;font-weight:700}
+button.secondary{background:#1a5b35;color:#fff}
+button.ghost{background:#103721;color:#fff;border:1px solid rgba(255,255,255,.15)}
+.grid{grid-template-columns:1.4fr .8fr;align-items:start}
+.panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:18px;backdrop-filter:blur(8px)}
+.sector{margin-bottom:18px}
+.sector h2{margin:6px 0 14px;font-size:24px;color:#ffe060}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.player{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:12px 14px;border-radius:16px;cursor:pointer;transition:.15s}
+.player:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
+.player.active{outline:2px solid #ffe060;background:rgba(245,196,0,.18)}
+.name{font-weight:800;font-size:17px}
+.club{font-size:13px;color:#d9e3dc;margin-top:4px}
+.summary{grid-template-columns:1fr;position:sticky;top:12px}
+.count{font-size:14px;color:#dce9dd;margin-bottom:12px}
+.summary h3{margin:0 0 10px;font-size:22px}
+.sel-sector{margin:10px 0}
+.sel-sector-title{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ffe060;margin-bottom:6px}
+.pill{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.07);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.pill small{color:#dce6dc}
+.export-actions{grid-template-columns:repeat(4,1fr);margin-top:12px}
+.note{font-size:12px;color:#d4e0d5;line-height:1.45;margin-top:10px}
+.preview-box{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.mini-preview{background:rgba(255,255,255,.05);padding:14px;border-radius:20px;border:1px solid rgba(255,255,255,.08)}
+.mini-preview canvas{width:100%;height:auto;border-radius:18px;background:#0b2f1b}
+.manual{margin-top:26px;line-height:1.6}
+code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
+@media (max-width: 900px){.controls,.grid,.preview-box,.export-actions{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.summary{position:static}}
+</style>
+</head>
+<body>
+<script>
+/*
+  =========================
+  EDIÇÃO MANUAL RÁPIDA
+  =========================
+  1) Para trocar o clube de um jogador, altere o campo club abaixo.
+  2) Para adicionar um jogador, copie uma linha e mude name/sector/club.
+  3) Setores aceitos: "Goleiros", "Defensores", "Meio-campistas", "Atacantes"
+  4) Máximo: 26 jogadores selecionados e 3 goleiros.
+*/
+const SITE_CONFIG = {
+  siteName: "Monte a sua também",
+  siteUrl: "seu-site-aqui.com",
+  pageTitle: "Monte sua Convocação da Seleção",
+  subtitle: "Escolha 26 nomes, gere sua arte e compartilhe no WhatsApp, Instagram e Facebook.",
+};
+
+const PLAYERS = [
+  { name: "Alisson", sector: "Goleiros", club: "Liverpool" },
+  { name: "Bento", sector: "Goleiros", club: "Al-Nassr" },
+  { name: "Ederson", sector: "Goleiros", club: "Manchester City" },
+  { name: "Hugo Souza", sector: "Goleiros", club: "Corinthians" },
+  { name: "Léo Jardim", sector: "Goleiros", club: "Vasco da Gama" },
+  { name: "Lucas Perri", sector: "Goleiros", club: "Lyon" },
+  { name: "Rafael", sector: "Goleiros", club: "São Paulo" },
+  { name: "Weverton", sector: "Goleiros", club: "Palmeiras" },
+
+  { name: "Abner", sector: "Defensores", club: "Lyon" },
+  { name: "Alex Sandro", sector: "Defensores", club: "Flamengo" },
+  { name: "Ayrton Lucas", sector: "Defensores", club: "Flamengo" },
+  { name: "Caio Henrique", sector: "Defensores", club: "Monaco" },
+  { name: "Carlos Augusto", sector: "Defensores", club: "Inter de Milão" },
+  { name: "Danilo (defensor)", sector: "Defensores", club: "Flamengo" },
+  { name: "Douglas Santos", sector: "Defensores", club: "Zenit" },
+  { name: "Emerson Royal", sector: "Defensores", club: "Milan" },
+  { name: "Guilherme Arana", sector: "Defensores", club: "Atlético-MG" },
+  { name: "Luciano Juba", sector: "Defensores", club: "Bahia" },
+  { name: "Paulo Henrique", sector: "Defensores", club: "Vasco da Gama" },
+  { name: "Renan Lodi", sector: "Defensores", club: "Al-Hilal" },
+  { name: "Vanderson", sector: "Defensores", club: "Monaco" },
+  { name: "Wendell", sector: "Defensores", club: "São Paulo" },
+  { name: "Wesley", sector: "Defensores", club: "Flamengo" },
+  { name: "Yan Couto", sector: "Defensores", club: "Borussia Dortmund" },
+  { name: "Adryelson", sector: "Defensores", club: "Al-Wasl" },
+  { name: "Alexsandro", sector: "Defensores", club: "Lille" },
+  { name: "Beraldo", sector: "Defensores", club: "Paris Saint-Germain" },
+  { name: "Bremer", sector: "Defensores", club: "Juventus" },
+  { name: "Éder Militão", sector: "Defensores", club: "Real Madrid" },
+  { name: "Fabrício Bruno", sector: "Defensores", club: "Cruzeiro" },
+  { name: "Gabriel Magalhães", sector: "Defensores", club: "Arsenal" },
+  { name: "Ibañez", sector: "Defensores", club: "Al-Ahli" },
+  { name: "Léo Ortiz", sector: "Defensores", club: "Flamengo" },
+  { name: "Léo Pereira", sector: "Defensores", club: "Flamengo" },
+  { name: "Marquinhos", sector: "Defensores", club: "Paris Saint-Germain" },
+  { name: "Murillo", sector: "Defensores", club: "Nottingham Forest" },
+  { name: "Murilo", sector: "Defensores", club: "Palmeiras" },
+  { name: "Nino", sector: "Defensores", club: "Zenit" },
+  { name: "Vitor Reis", sector: "Defensores", club: "Manchester City" },
+
+  { name: "Andreas Pereira", sector: "Meio-campistas", club: "Palmeiras" },
+  { name: "Andrey Santos", sector: "Meio-campistas", club: "Chelsea" },
+  { name: "André", sector: "Meio-campistas", club: "Wolverhampton" },
+  { name: "Bruno Guimarães", sector: "Meio-campistas", club: "Newcastle" },
+  { name: "Casemiro", sector: "Meio-campistas", club: "Manchester United" },
+  { name: "Danilo (meio-campista)", sector: "Meio-campistas", club: "Botafogo" },
+  { name: "Douglas Luiz", sector: "Meio-campistas", club: "Juventus" },
+  { name: "Éderson", sector: "Meio-campistas", club: "Atalanta" },
+  { name: "Fabinho", sector: "Meio-campistas", club: "Al-Ittihad" },
+  { name: "Gabriel Sara", sector: "Meio-campistas", club: "Galatasaray" },
+  { name: "Gerson", sector: "Meio-campistas", club: "Flamengo" },
+  { name: "Jean Lucas", sector: "Meio-campistas", club: "Bahia" },
+  { name: "Joelinton", sector: "Meio-campistas", club: "Newcastle" },
+  { name: "João Gomes", sector: "Meio-campistas", club: "Wolverhampton" },
+  { name: "Lucas Paquetá", sector: "Meio-campistas", club: "Flamengo" },
+  { name: "Neymar", sector: "Meio-campistas", club: "Santos" },
+  { name: "Pablo Maia", sector: "Meio-campistas", club: "São Paulo" },
+  { name: "Pepê", sector: "Meio-campistas", club: "Porto" },
+  { name: "Raphael Veiga", sector: "Meio-campistas", club: "Palmeiras" },
+  { name: "Savinho", sector: "Meio-campistas", club: "Manchester City" },
+  { name: "Vitinho", sector: "Meio-campistas", club: "Internacional" },
+
+  { name: "Antony", sector: "Atacantes", club: "Real Betis" },
+  { name: "David Neres", sector: "Atacantes", club: "Napoli" },
+  { name: "Endrick", sector: "Atacantes", club: "Real Madrid" },
+  { name: "Estevão", sector: "Atacantes", club: "Chelsea" },
+  { name: "Evanilson", sector: "Atacantes", club: "Bournemouth" },
+  { name: "Gabriel Jesus", sector: "Atacantes", club: "Arsenal" },
+  { name: "Gabriel Martinelli", sector: "Atacantes", club: "Arsenal" },
+  { name: "Igor Jesus", sector: "Atacantes", club: "Nottingham Forest" },
+  { name: "Igor Thiago", sector: "Atacantes", club: "Brentford" },
+  { name: "João Pedro", sector: "Atacantes", club: "Chelsea" },
+  { name: "Kaio Jorge", sector: "Atacantes", club: "Cruzeiro" },
+  { name: "Luiz Henrique", sector: "Atacantes", club: "Zenit" },
+  { name: "Matheus Cunha", sector: "Atacantes", club: "Manchester United" },
+  { name: "Paulinho", sector: "Atacantes", club: "Palmeiras" },
+  { name: "Pedro", sector: "Atacantes", club: "Flamengo" },
+  { name: "Raphinha", sector: "Atacantes", club: "Barcelona" },
+  { name: "Rayan", sector: "Atacantes", club: "Vasco da Gama" },
+  { name: "Richarlison", sector: "Atacantes", club: "Tottenham" },
+  { name: "Rodrygo", sector: "Atacantes", club: "Real Madrid" },
+  { name: "Samuel Lino", sector: "Atacantes", club: "Atlético de Madrid" },
+  { name: "Vini Jr.", sector: "Atacantes", club: "Real Madrid" },
+  { name: "Vitor Roque", sector: "Atacantes", club: "Palmeiras" },
+];
+
+const THEMES = [
+  { bg:'#06140f', panel:'#101010', title:'#ffffff', heading:'#f5c400', text:'#ffffff', club:'#e6e6e6', accent:'#1d7f48' },
+  { bg:'#04162e', panel:'#0c2343', title:'#ffffff', heading:'#f0cf5d', text:'#ffffff', club:'#dce8ff', accent:'#1a8cff' },
+  { bg:'#062d19', panel:'#0f4726', title:'#ffffff', heading:'#f5c400', text:'#ffffff', club:'#e1f0e4', accent:'#1e8c52' },
+  { bg:'#0a1f35', panel:'#14395c', title:'#ffffff', heading:'#f7dc74', text:'#ffffff', club:'#dfeeff', accent:'#2a9fff' },
+  { bg:'#121212', panel:'#232323', title:'#ffffff', heading:'#7dd3fc', text:'#ffffff', club:'#eaeaea', accent:'#0ea5e9' },
+  { bg:'#08281c', panel:'#163c2e', title:'#ffffff', heading:'#a7f3d0', text:'#ffffff', club:'#e8fff3', accent:'#34d399' },
+  { bg:'#1b2430', panel:'#2a3545', title:'#ffffff', heading:'#ffd95a', text:'#ffffff', club:'#f0f0f0', accent:'#6ee7b7' },
+  { bg:'#07131c', panel:'#10293d', title:'#ffffff', heading:'#d9f99d', text:'#ffffff', club:'#deedf7', accent:'#38bdf8' }
+];
+</script>
+<div class="wrap">
+  <div class="hero"><h1 id="pageTitle"></h1><div class="sub" id="pageSubtitle"></div></div>
+  <div class="controls">
+    <div><label>Buscar jogador</label><input id="search" placeholder="Digite nome, clube ou setor" /></div>
+    <div><label>Seu título na arte</label><input id="customTitle" value="Minha Convocação" /></div>
+    <div><label>Formato da arte</label><select id="formatSelect"><option value="story">Story (1080x1920)</option><option value="feed">Feed (1080x1350)</option></select></div>
+  </div>
+  <div class="grid">
+    <div class="panel"><div id="playersRoot"></div></div>
+    <div class="summary panel"><h3>Sua lista</h3><div class="count" id="countLabel">0/26 selecionados • 0/3 goleiros</div><div id="selectedRoot"></div><div class="export-actions"><button id="generateBtn">Gerar arte</button><button class="secondary" id="downloadBtn">Baixar</button><button class="ghost" id="shareBtn">Compartilhar</button><button class="ghost" id="clearBtn">Limpar</button></div><div class="note">A arte agora usa áreas fixas por setor e reduz o tamanho do texto automaticamente para não sobrepor nomes. Máximo de 3 goleiros e 26 nomes no total.</div></div>
+  </div>
+  <div class="preview-box"><div class="mini-preview"><strong>Preview da arte</strong><canvas id="previewCanvas"></canvas></div><div class="panel manual"><h3>Como editar manualmente</h3><div>Abra o arquivo <code>index.html</code> em qualquer editor de texto.</div><div>Procure <code>const PLAYERS = [</code> para trocar clube, nome ou adicionar jogadores.</div><div>Exemplo: <code>{ name: "NOME", sector: "Atacantes", club: "CLUBE" },</code></div><div style="margin-top:8px">Também dá para editar o nome do site e texto do topo em <code>const SITE_CONFIG</code>.</div></div></div>
+</div>
+<script>
+const sectors = ["Goleiros","Defensores","Meio-campistas","Atacantes"];
+let selected = [];
+let activeTheme = THEMES[Math.floor(Math.random()*THEMES.length)];
+const searchEl = document.getElementById('search');
+const titleEl = document.getElementById('customTitle');
+const formatEl = document.getElementById('formatSelect');
+const playersRoot = document.getElementById('playersRoot');
+const selectedRoot = document.getElementById('selectedRoot');
+const countLabel = document.getElementById('countLabel');
+const previewCanvas = document.getElementById('previewCanvas');
+document.getElementById('pageTitle').textContent = SITE_CONFIG.pageTitle;
+document.getElementById('pageSubtitle').textContent = SITE_CONFIG.subtitle;
+function filteredPlayers(){const q=searchEl.value.trim().toLowerCase();return PLAYERS.filter(p=>!q||p.name.toLowerCase().includes(q)||p.club.toLowerCase().includes(q)||p.sector.toLowerCase().includes(q));}
+function escapeHtml(str){return str.replace(/"/g,'&quot;');}
+function getFormat(){return formatEl.value==='feed'?{w:1080,h:1350,label:'Feed'}:{w:1080,h:1920,label:'Story'};}
+function renderPlayers(){const list=filteredPlayers();playersRoot.innerHTML=sectors.map(sector=>{const items=list.filter(p=>p.sector===sector);return `<div class="sector"><h2>${sector}</h2><div class="cards">${items.map(p=>{const active=selected.some(s=>s.name===p.name);return `<div class="player ${active?'active':''}" data-name="${escapeHtml(p.name)}"><div class="name">${p.name}</div><div class="club">${p.club}</div></div>`;}).join('')}</div></div>`;}).join('');playersRoot.querySelectorAll('.player').forEach(el=>el.onclick=()=>togglePlayer(el.getAttribute('data-name')));}
+function renderSelected(){countLabel.textContent=`${selected.length}/26 selecionados • ${selected.filter(p=>p.sector==='Goleiros').length}/3 goleiros`;selectedRoot.innerHTML=sectors.map(sector=>{const items=selected.filter(p=>p.sector===sector);return `<div class="sel-sector"><div class="sel-sector-title">${sector}</div>${items.map(p=>`<div class="pill"><span>${p.name}</span><small>${p.club}</small></div>`).join('')||'<div class="club">Nenhum</div>'}</div>`;}).join('');drawPreview();}
+function togglePlayer(name){const item=PLAYERS.find(p=>p.name===name);const exists=selected.some(s=>s.name===name);if(exists){selected=selected.filter(s=>s.name!==name);renderPlayers();renderSelected();return;}if(selected.length>=26)return alert('Você só pode escolher 26 jogadores.');if(item.sector==='Goleiros'&&selected.filter(p=>p.sector==='Goleiros').length>=3)return alert('Você só pode escolher 3 goleiros.');selected.push(item);renderPlayers();renderSelected();}
+function wrapLines(ctx,text,maxWidth){const words=String(text).split(' ');let line='';const lines=[];for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else{line=test;}}if(line)lines.push(line);return lines;}
+function fitFontToWidth(ctx,text,maxWidth,startSize,weight='900'){let size=startSize;while(size>18){ctx.font=`${weight} ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)return size;size-=2;}return size;}
+function getBlockMetrics(ctx,sectorName,items,width,height,isFeed){const headingSize=fitFontToWidth(ctx,sectorName.toUpperCase(),width,isFeed?52:58);const headingHeight=headingSize+(isFeed?18:20);const maxName=isFeed?32:36,minName=isFeed?22:24,maxClub=isFeed?24:26,minClub=isFeed?16:17;for(let nameSize=maxName;nameSize>=minName;nameSize-=2){const clubSize=Math.max(minClub,Math.min(maxClub,nameSize-8));const nameLine=Math.round(nameSize*1.02),clubLine=Math.round(clubSize*1.02);const gapAfterName=isFeed?8:10,gapAfterItem=isFeed?10:12;let total=headingHeight+8;const prepared=[];ctx.font=`900 ${nameSize}px Arial`;for(const p of items){const nameLines=wrapLines(ctx,p.name.toUpperCase(),width-8);ctx.font=`${clubSize}px Arial`;const clubLines=wrapLines(ctx,p.club,width-8);ctx.font=`900 ${nameSize}px Arial`;prepared.push({nameLines,clubLines});total+=nameLines.length*nameLine+gapAfterName+clubLines.length*clubLine+gapAfterItem;}if(total<=height)return{headingSize,headingHeight,nameSize,clubSize,nameLine,clubLine,gapAfterName,gapAfterItem,prepared};}const nameSize=isFeed?20:22,clubSize=isFeed?15:16;const nameLine=Math.round(nameSize*1.02),clubLine=Math.round(clubSize*1.02);ctx.font=`900 ${nameSize}px Arial`;const prepared=items.map(p=>{const nameLines=wrapLines(ctx,p.name.toUpperCase(),width-8);ctx.font=`${clubSize}px Arial`;const clubLines=wrapLines(ctx,p.club,width-8);ctx.font=`900 ${nameSize}px Arial`;return{nameLines,clubLines};});return{headingSize,headingHeight,nameSize,clubSize,nameLine,clubLine,gapAfterName:8,gapAfterItem:10,prepared};}
+function drawArt(canvas,download=false){if(selected.length!==26){if(download)alert('Selecione exatamente 26 jogadores para gerar a arte.');return;}activeTheme=THEMES[Math.floor(Math.random()*THEMES.length)];const {w,h}=getFormat();const isFeed=h===1350;canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');const t=activeTheme;const grad=ctx.createLinearGradient(0,0,w,h);grad.addColorStop(0,t.bg);grad.addColorStop(1,t.accent);ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);ctx.globalAlpha=.10;ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(w*.5,h*.53,w*.12,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(w*.5,h*.30);ctx.lineTo(w*.70,h*.50);ctx.lineTo(w*.5,h*.70);ctx.lineTo(w*.30,h*.50);ctx.closePath();ctx.fill();ctx.globalAlpha=1;const padX=54;const titleText=(titleEl.value||'Minha Convocação').toUpperCase();const titleSize=fitFontToWidth(ctx,titleText,w-padX*2,isFeed?82:94);ctx.textAlign='left';ctx.fillStyle=t.heading;ctx.font=`900 ${titleSize}px Arial`;const titleY=isFeed?108:120;ctx.fillText(titleText,padX,titleY);const ruleY=titleY+16;ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(padX,ruleY);ctx.lineTo(w-padX,ruleY);ctx.stroke();const subtitle='SELEÇÃO BRASILEIRA • 26 CONVOCADOS';const subtitleSize=fitFontToWidth(ctx,subtitle,w-padX*2,isFeed?26:28,'700');ctx.fillStyle='rgba(255,255,255,.92)';ctx.font=`700 ${subtitleSize}px Arial`;const subtitleY=ruleY+34;ctx.fillText(subtitle,padX,subtitleY);const contentTop=subtitleY+(isFeed?26:34),footerY=h-36,contentBottom=footerY-(isFeed?52:62),colGap=isFeed?42:48,rowGap=isFeed?34:48,colW=(w-padX*2-colGap)/2,halfH=(contentBottom-contentTop-rowGap)/2;const blocks=[{sector:'Goleiros',x:padX,y:contentTop,w:colW,h:halfH},{sector:'Meio-campistas',x:padX+colW+colGap,y:contentTop,w:colW,h:halfH},{sector:'Defensores',x:padX,y:contentTop+halfH+rowGap,w:colW,h:halfH},{sector:'Atacantes',x:padX+colW+colGap,y:contentTop+halfH+rowGap,w:colW,h:halfH}];blocks.forEach(block=>{const items=selected.filter(p=>p.sector===block.sector);const m=getBlockMetrics(ctx,block.sector,items,block.w,block.h,isFeed);ctx.fillStyle=t.heading;ctx.font=`900 ${m.headingSize}px Arial`;ctx.fillText(block.sector.toUpperCase(),block.x,block.y+m.headingSize);let y=block.y+m.headingHeight+8;m.prepared.forEach(item=>{ctx.fillStyle=t.text;ctx.font=`900 ${m.nameSize}px Arial`;item.nameLines.forEach(line=>{ctx.fillText(line,block.x,y+m.nameSize);y+=m.nameLine;});y+=m.gapAfterName;ctx.fillStyle=t.club;ctx.font=`${m.clubSize}px Arial`;item.clubLines.forEach(line=>{ctx.fillText(line,block.x,y+m.clubSize);y+=m.clubLine;});y+=m.gapAfterItem;});});ctx.fillStyle='rgba(255,255,255,.92)';ctx.font=`700 ${isFeed?24:26}px Arial`;ctx.textAlign='center';ctx.fillText(`${SITE_CONFIG.siteName} • ${SITE_CONFIG.siteUrl}`,w/2,footerY);if(download){const link=document.createElement('a');link.href=canvas.toDataURL('image/png');link.download=`convocacao-${formatEl.value}.png`;link.click();}}
+function drawPreview(){drawArt(previewCanvas,false);}
+searchEl.addEventListener('input',renderPlayers);formatEl.addEventListener('change',drawPreview);titleEl.addEventListener('input',drawPreview);document.getElementById('generateBtn').onclick=()=>drawPreview();document.getElementById('downloadBtn').onclick=()=>drawArt(document.createElement('canvas'),true);document.getElementById('clearBtn').onclick=()=>{selected=[];renderPlayers();renderSelected();};document.getElementById('shareBtn').onclick=async()=>{const c=document.createElement('canvas');drawArt(c,false);if(selected.length!==26)return;c.toBlob(async blob=>{const file=new File([blob],`convocacao-${formatEl.value}.png`,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Minha Convocação',text:'Monte a sua também'});}catch(e){}}else{alert('No seu navegador, o compartilhamento direto pode não funcionar. Use o botão Baixar e depois poste a imagem.');}});};
+renderPlayers();renderSelected();
+</script>
+</body>
+</html>
