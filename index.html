@@ -120,6 +120,11 @@ input,select{
   transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 input::placeholder{color:rgba(227,239,230,.52)}
+select{color-scheme:dark}
+select option{
+  background:#0b2417;
+  color:#f6fff8;
+}
 input:focus,select:focus{
   border-color:rgba(255,209,48,.72);
   box-shadow:0 0 0 4px rgba(255,209,48,.12), 0 0 24px rgba(255,209,48,.14);
@@ -264,6 +269,143 @@ code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
   .cards{grid-template-columns:1fr}
   .summary{position:static}
 }
+
+/* Tabs */
+.tabbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+.tabbtn{
+  border:1px solid rgba(255,255,255,.12);
+  background:linear-gradient(180deg, rgba(13,58,35,.95), rgba(8,37,23,.98));
+  color:#fff;
+  padding:12px 14px;
+  border-radius:999px;
+  font-weight:900;
+  box-shadow:var(--shadow-soft);
+}
+.tabbtn.active{
+  border-color:rgba(255,209,48,.7);
+  box-shadow:0 0 0 4px rgba(255,209,48,.12), 0 12px 26px rgba(0,0,0,.22);
+}
+.tabview{display:none}
+.tabview.active{display:block}
+
+/* Lineup builder */
+.lineup-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.field{
+  position:relative;
+  width:100%;
+  aspect-ratio: 4 / 5.9;
+  min-height:780px;
+  border-radius:26px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:var(--shadow);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,.16), transparent 35%),
+    linear-gradient(180deg, #f3c414 0%, #e7b806 60%, #d4a100 100%);
+}
+.field::before{
+  content:"";
+  position:absolute; inset:18px;
+  border-radius:20px;
+  border:2px solid rgba(255,255,255,.70);
+  opacity:.9;
+}
+.field::after{
+  content:"";
+  position:absolute; left:50%; top:18px; bottom:18px;
+  width:2px; transform:translateX(-50%);
+  background:rgba(255,255,255,.55);
+  opacity:.9;
+}
+.field .circle{
+  position:absolute; left:50%; top:50%;
+  width:34%; aspect-ratio:1/1;
+  transform:translate(-50%,-50%);
+  border:2px solid rgba(255,255,255,.55);
+  border-radius:999px;
+}
+.field .box-top,
+.field .box-bottom{
+  position:absolute; left:50%;
+  width:52%; height:18%;
+  transform:translateX(-50%);
+  border:2px solid rgba(255,255,255,.55);
+  border-bottom:none;
+  opacity:.9;
+}
+.field .box-top{top:18px;border-bottom:2px solid rgba(255,255,255,.0);border-top-left-radius:18px;border-top-right-radius:18px}
+.field .box-bottom{bottom:18px;border-top:none;border-bottom-left-radius:18px;border-bottom-right-radius:18px}
+.field .spot{
+  position:absolute; left:50%;
+  width:10px;height:10px;border-radius:999px;
+  background:rgba(255,255,255,.7);
+  transform:translateX(-50%);
+}
+.field .spot.top{top:32%}
+.field .spot.bottom{bottom:32%}
+
+.node{
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  user-select:none;
+  cursor:grab;
+  touch-action:none;
+}
+.node:active{cursor:grabbing}
+.node .avatar{
+  width:68px;height:68px;border-radius:999px;
+  border:3px solid rgba(16,163,74,.95);
+  box-shadow:0 10px 18px rgba(0,0,0,.22), 0 0 0 3px rgba(255,209,48,.12);
+  object-fit:cover;
+  background:rgba(255,255,255,.12);
+}
+.node .label{
+  padding:7px 12px;
+  border-radius:16px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.02em;
+  background:rgba(0,0,0,.38);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);
+  white-space:normal;
+  text-align:center;
+  line-height:1.05;
+  max-width:132px;
+  min-height:28px;
+  overflow:visible;
+}
+.node .role{
+  font-size:10px;
+  opacity:.9;
+  margin-top:-1px;
+  text-shadow:0 1px 0 rgba(0,0,0,.22);
+}
+.slot-hint{
+  font-size:12px;color:#d9e3dc;line-height:1.5
+}
+.pick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pick-col{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px}
+.pick-col h4{margin:0 0 8px;font-size:14px;color:#ffe37a}
+.pick-item{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 10px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.16);
+  cursor:pointer;
+  transition:transform .18s ease, background .18s ease, border-color .18s ease;
+  margin-bottom:8px;
+}
+.pick-item:hover{transform:translateY(-1px);background:rgba(0,0,0,.22)}
+.pick-item.active{border-color:rgba(255,209,48,.6);background:rgba(255,209,48,.10)}
+.pick-item small{opacity:.85}
+@media (max-width: 980px){
+  .lineup-grid{grid-template-columns:1fr}
+  .pick-grid{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -387,11 +529,15 @@ const THEMES = [
       <a class="btn" href="#montador">Começar agora</a>
       <a class="btn" style="background:#1a5b35;color:#fff" href="#mural">Ver convocações publicadas</a>
     </div>
+    <div class="tabbar" id="tabbar">
+      <button class="tabbtn active" id="tabConvocacao">Convocação (26)</button>
+      <button class="tabbtn" id="tabTitulares">Escale seus 11</button>
+    </div>
   </div>
 
   <div id="sharedView"></div>
 
-  <div id="montador">
+  <div id="montador" class="tabview active">
     <div class="panel">
       <div class="identity-grid">
         <div>
@@ -453,6 +599,58 @@ const THEMES = [
     </div>
   </div>
 
+
+  <div id="titulares" class="tabview">
+    <div class="panel">
+      <h3 style="margin:0 0 10px">Escale seus 11 Titulares</h3>
+      <div class="small" id="lineupHint">Escolha a formação e selecione 1 goleiro + a quantidade exata de defensores/meias/atacantes. Depois você pode <strong>arrastar</strong> no campinho para ajustar.</div>
+      <div class="controls" style="margin-top:14px">
+        <div>
+          <label>Formação</label>
+          <select id="formationSelect">
+            <option value="4-3-3">4-3-3</option>
+            <option value="3-4-3">3-4-3</option>
+            <option value="3-5-2">3-5-2</option>
+            <option value="4-4-2">4-4-2</option>
+            <option value="5-4-1">5-4-1</option>
+          </select>
+        </div>
+        <div>
+          <label>Status</label>
+          <input id="lineupStatus" readonly value="Monte os 26 primeiro para liberar a escalação." />
+        </div>
+        <div>
+          <label>Ações</label>
+          <button class="secondary" id="resetLineupBtn" type="button">Resetar posições</button>
+        </div>
+      </div>
+
+      <div class="lineup-grid">
+        <div class="mini-preview">
+          <strong>Campinho</strong>
+          <div class="field" id="field">
+            <div class="circle"></div>
+            <div class="box-top"></div>
+            <div class="box-bottom"></div>
+            <div class="spot top"></div>
+            <div class="spot bottom"></div>
+          </div>
+          <div class="slot-hint" style="margin-top:10px" id="slotHint"></div>
+          <div class="export-actions" style="margin-top:12px">
+            <button class="primary" id="shareLineupBtn" type="button">Compartilhar escalação</button>
+            <button class="secondary" id="publishLineupBtn" type="button">Publicar no mural</button>
+            <button class="ghost" id="copyLineupLinkBtn" type="button">Copiar link</button>
+          </div>
+        </div>
+        <div class="panel">
+          <strong>Escolha seus titulares (a partir dos 26)</strong>
+          <div class="small" style="margin:8px 0 12px">Clique para marcar/desmarcar como titular. Ao marcar, o jogador entra no campinho na posição base da formação (depois você ajusta arrastando).</div>
+          <div class="pick-grid" id="pickGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="section-divider"></div>
   <div class="mural panel" id="mural">
     <h3>Convocações publicadas</h3>
@@ -472,6 +670,321 @@ let selected = [];
 let activeTheme = THEMES[Math.floor(Math.random()*THEMES.length)];
 let currentPublishedId = null;
 let currentPublishedSignature = null;
+// Lineup state (saved inside players payload as starter + pos)
+let formation = '4-3-3';
+let lineupPosByName = {}; // { [name]: { starter: true, role:'GK'|'DEF'|'MID'|'ATT', x: number, y:number } }
+
+// Tab elements
+const tabConvocacaoBtn = document.getElementById('tabConvocacao');
+const tabTitularesBtn = document.getElementById('tabTitulares');
+const titularesView = document.getElementById('titulares');
+const formationEl = document.getElementById('formationSelect');
+const lineupStatusEl = document.getElementById('lineupStatus');
+const fieldEl = document.getElementById('field');
+const pickGridEl = document.getElementById('pickGrid');
+const slotHintEl = document.getElementById('slotHint');
+const resetLineupBtn = document.getElementById('resetLineupBtn');
+
+function parseFormation(str){
+  const parts = String(str).split('-').map(n=>parseInt(n,10)).filter(n=>Number.isFinite(n));
+  if(parts.length!==3) return {def:4, mid:3, att:3};
+  return {def:parts[0], mid:parts[1], att:parts[2]};
+}
+
+// Default slot positions (percentages)
+function buildSlots(form){
+  const f = parseFormation(form);
+  const slots = [];
+  // GK
+  slots.push({role:'GK', x:50, y:84});
+  // DEF line
+  const defXs = spreadX(f.def);
+  defXs.forEach(x=>slots.push({role:'DEF', x, y:67}));
+  // MID line
+  const midXs = spreadX(f.mid);
+  midXs.forEach(x=>slots.push({role:'MID', x, y:46}));
+  // ATT line
+  const attXs = spreadX(f.att);
+  attXs.forEach(x=>slots.push({role:'ATT', x, y:18}));
+  return slots;
+}
+function spreadX(n){
+  if(n<=1) return [50];
+  const min=18, max=82;
+  const step=(max-min)/(n-1);
+  return Array.from({length:n}, (_,i)=>Math.round((min+i*step)*10)/10);
+}
+
+function requirementsForFormation(form){
+  const f = parseFormation(form);
+  return {GK:1, DEF:f.def, MID:f.mid, ATT:f.att};
+}
+
+function getSelectedPoolByRole(){
+  return {
+    GK: selected.filter(p=>p.sector==='Goleiros'),
+    DEF: selected.filter(p=>p.sector==='Defensores'),
+    MID: selected.filter(p=>p.sector==='Meio-campistas'),
+    ATT: selected.filter(p=>p.sector==='Atacantes')
+  };
+}
+
+function activeStarters(){
+  return Object.entries(lineupPosByName)
+    .filter(([,v])=>v && v.starter)
+    .map(([name,v])=>({name, ...v}));
+}
+
+function countStartersByRole(){
+  const counts = {GK:0, DEF:0, MID:0, ATT:0, TOTAL:0};
+  for(const v of Object.values(lineupPosByName)){
+    if(v?.starter){
+      counts.TOTAL += 1;
+      if(v.role==='GK') counts.GK += 1;
+      if(v.role==='DEF') counts.DEF += 1;
+      if(v.role==='MID') counts.MID += 1;
+      if(v.role==='ATT') counts.ATT += 1;
+    }
+  }
+  return counts;
+}
+
+function lineupIsEnabled(){
+  return selected.length === 26;
+}
+
+function setTab(which){
+  const isTit = which === 'titulares';
+  document.getElementById('montador').classList.toggle('active', !isTit);
+  document.getElementById('titulares').classList.toggle('active', isTit);
+  tabConvocacaoBtn.classList.toggle('active', !isTit);
+  tabTitularesBtn.classList.toggle('active', isTit);
+  if(isTit) renderLineup();
+}
+
+tabConvocacaoBtn?.addEventListener('click', ()=>setTab('convocacao'));
+tabTitularesBtn?.addEventListener('click', ()=>{
+  if(!lineupIsEnabled()){
+    alert('Primeiro selecione exatamente 26 jogadores para liberar a escalação dos 11.');
+    return;
+  }
+  setTab('titulares');
+});
+
+// Restore active styles for buttons
+function syncTabBtnStyles(){
+  tabConvocacaoBtn.classList.add('active');
+  tabTitularesBtn.classList.remove('active');
+}
+syncTabBtnStyles();
+
+formationEl?.addEventListener('change', ()=>{
+  formation = formationEl.value;
+  // reset starter positions but keep who is starter, re-seat them
+  reseatStartersToSlots();
+  renderLineup();
+});
+
+resetLineupBtn?.addEventListener('click', ()=>{
+  reseatStartersToSlots(true);
+  renderLineup();
+});
+
+function ensureLineupDefaults(){
+  if(!formationEl) return;
+  formationEl.value = formation;
+}
+
+function reseatStartersToSlots(force=false){
+  const slots = buildSlots(formation);
+  const req = requirementsForFormation(formation);
+  const byRole = {GK:[], DEF:[], MID:[], ATT:[]};
+
+  // Collect current starters (keep selection)
+  for(const [name,v] of Object.entries(lineupPosByName)){
+    if(v?.starter){
+      byRole[v.role==='GK'?'GK':(v.role==='DEF'?'DEF':(v.role==='MID'?'MID':'ATT'))].push({name,v});
+    }
+  }
+
+  // Assign slots per role in stable order
+  const roleToSlots = {
+    GK: slots.filter(s=>s.role==='GK'),
+    DEF: slots.filter(s=>s.role==='DEF'),
+    MID: slots.filter(s=>s.role==='MID'),
+    ATT: slots.filter(s=>s.role==='ATT'),
+  };
+
+  for(const role of ['GK','DEF','MID','ATT']){
+    const needed = req[role];
+    const list = byRole[role].slice(0, needed);
+    // Remove any extra starters beyond needed
+    byRole[role].slice(needed).forEach(({name})=>{
+      lineupPosByName[name] = { starter:false, role: role==='GK'?'GK':(role==='DEF'?'DEF':(role==='MID'?'MID':'ATT')), x:50, y:50 };
+    });
+    list.forEach(({name}, idx)=>{
+      const slot = roleToSlots[role][idx] || roleToSlots[role][roleToSlots[role].length-1] || {x:50,y:50,role:role};
+      if(force || !lineupPosByName[name]?.x || !lineupPosByName[name]?.y){
+        lineupPosByName[name] = { starter:true, role: slot.role, x: slot.x, y: slot.y };
+      } else if(force){
+        lineupPosByName[name] = { starter:true, role: slot.role, x: slot.x, y: slot.y };
+      } else {
+        // keep position but update role
+        lineupPosByName[name] = { ...lineupPosByName[name], starter:true, role: slot.role };
+      }
+    });
+  }
+}
+
+function toggleStarterForPlayer(p, role){
+  const req = requirementsForFormation(formation);
+  const counts = countStartersByRole();
+  const cur = lineupPosByName[p.name];
+
+  if(cur?.starter){
+    lineupPosByName[p.name] = { ...cur, starter:false };
+    return;
+  }
+  // Enforce counts
+  const roleKey = role==='Goleiros'?'GK':(role==='Defensores'?'DEF':(role==='Meio-campistas'?'MID':'ATT'));
+  if(counts[roleKey] >= req[roleKey]){
+    alert(`Na formação ${formation}, você já preencheu o limite de ${req[roleKey]} ${roleKey==='GK'?'goleiro(s)':(roleKey==='DEF'?'defensor(es)':(roleKey==='MID'?'meio-campista(s)':'atacante(s)'))}.`);
+    return;
+  }
+  // Seat in next empty slot
+  const slots = buildSlots(formation).filter(s=>s.role===roleKey);
+  const occupied = new Set(Object.values(lineupPosByName).filter(v=>v?.starter && v.role===roleKey).map(v=>`${v.x}|${v.y}`));
+  const slot = slots.find(s=>!occupied.has(`${s.x}|${s.y}`)) || slots[counts[roleKey]] || slots[0] || {x:50,y:50,role:roleKey};
+  lineupPosByName[p.name] = { starter:true, role: roleKey, x: slot.x, y: slot.y };
+}
+
+function renderLineup(){
+  ensureLineupDefaults();
+  if(!lineupIsEnabled()){
+    if(lineupStatusEl) lineupStatusEl.value = 'Monte os 26 primeiro para liberar a escalação.';
+    if(pickGridEl) pickGridEl.innerHTML = '';
+    if(fieldEl) fieldEl.querySelectorAll('.node').forEach(n=>n.remove());
+    if(slotHintEl) slotHintEl.textContent = '';
+    ['shareLineupBtn','publishLineupBtn','copyLineupLinkBtn'].forEach(id=>{ const btn=document.getElementById(id); if(btn) btn.disabled = true; });
+    return;
+  }
+
+  const req = requirementsForFormation(formation);
+  const counts = countStartersByRole();
+  if(lineupStatusEl){
+    lineupStatusEl.value = `Formação ${formation}: ${counts.GK}/${req.GK} GK • ${counts.DEF}/${req.DEF} DEF • ${counts.MID}/${req.MID} MID • ${counts.ATT}/${req.ATT} ATT • Total ${counts.TOTAL}/11`;
+  }
+  if(slotHintEl){
+    slotHintEl.textContent = 'Dica: depois de escolher os 11, arraste os jogadores para ajustar altura e largura. As posições serão salvas no link e no mural.';
+  }
+  const lineupReady = counts.GK===req.GK && counts.DEF===req.DEF && counts.MID===req.MID && counts.ATT===req.ATT && counts.TOTAL===11;
+  ['shareLineupBtn','publishLineupBtn','copyLineupLinkBtn'].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn) btn.disabled = !lineupReady;
+  });
+
+  // Pick list
+  const pool = getSelectedPoolByRole();
+  const cols = [
+    {title:'Goleiro', role:'Goleiros', key:'GK', items: pool.GK, limit:req.GK},
+    {title:'Defensores', role:'Defensores', key:'DEF', items: pool.DEF, limit:req.DEF},
+    {title:'Meio', role:'Meio-campistas', key:'MID', items: pool.MID, limit:req.MID},
+    {title:'Ataque', role:'Atacantes', key:'ATT', items: pool.ATT, limit:req.ATT},
+  ];
+  if(pickGridEl){
+    pickGridEl.innerHTML = cols.map(col=>{
+      return `<div class="pick-col">
+        <h4>${col.title} <span class="small">(${countStartersByRole()[col.key]}/${col.limit})</span></h4>
+        ${(col.items||[]).map(pl=>{
+          const active = !!lineupPosByName[pl.name]?.starter;
+          return `<div class="pick-item ${active?'active':''}" data-pick="${escapeHtml(pl.name)}" data-role="${escapeHtml(col.role)}">
+            <span><strong>${escapeHtml(pl.name)}</strong><br><small>${escapeHtml(pl.club)}</small></span>
+            <span class="player-badge" style="width:26px;height:26px;opacity:${active?1:0};transform:scale(${active?1:0.7});transition:.18s">✓</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('');
+    pickGridEl.querySelectorAll('[data-pick]').forEach(el=>{
+      el.onclick = ()=>{
+        const name = el.getAttribute('data-pick');
+        const role = el.getAttribute('data-role');
+        const pl = selected.find(x=>x.name===name);
+        if(!pl) return;
+        toggleStarterForPlayer(pl, role);
+        // After toggling, reseat to keep roles aligned when formation changes
+        reseatStartersToSlots(false);
+        renderLineup();
+      };
+    });
+  }
+
+  // Field nodes
+  if(fieldEl){
+    fieldEl.querySelectorAll('.node').forEach(n=>n.remove());
+    const starters = activeStarters().sort((a,b)=>a.role.localeCompare(b.role));
+    starters.forEach(st=>{
+      const player = PLAYERS.find(p=>p.name===st.name) || selected.find(p=>p.name===st.name);
+      if(!player) return;
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.style.left = `${st.x}%`;
+      node.style.top = `${st.y}%`;
+      node.dataset.name = st.name;
+
+      node.innerHTML = `
+        <img class="avatar" src="${escapeHtml(player.photo || '')}" alt="${escapeHtml(player.name)}" loading="lazy" referrerpolicy="no-referrer">
+        <div class="label">${escapeHtml(player.name.toUpperCase())}</div>
+        <div class="role">${st.role==='GK'?'GOLEIRO':(st.role==='DEF'?'DEFESA':(st.role==='MID'?'MEIO':'ATAQUE'))}</div>
+      `;
+      fieldEl.appendChild(node);
+      makeDraggable(node, fieldEl);
+    });
+  }
+}
+
+function makeDraggable(node, container){
+  let dragging = false;
+  let pointerId = null;
+
+  const clamp = (v,min,max)=>Math.min(max,Math.max(min,v));
+
+  function toPercent(clientX, clientY){
+    const rect = container.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    // keep inside field bounds (a little padding so avatar doesn't clip)
+    const px = clamp(x, 9, 91);
+    const py = clamp(y, 10, 90);
+    return {x: Math.round(px*10)/10, y: Math.round(py*10)/10};
+  }
+
+  node.addEventListener('pointerdown', (e)=>{
+    dragging = true;
+    pointerId = e.pointerId;
+    node.setPointerCapture(pointerId);
+  });
+
+  node.addEventListener('pointermove', (e)=>{
+    if(!dragging || e.pointerId !== pointerId) return;
+    const pos = toPercent(e.clientX, e.clientY);
+    node.style.left = `${pos.x}%`;
+    node.style.top = `${pos.y}%`;
+    const name = node.dataset.name;
+    if(name && lineupPosByName[name]){
+      lineupPosByName[name] = { ...lineupPosByName[name], x: pos.x, y: pos.y };
+    }
+  });
+
+  function end(e){
+    if(e.pointerId !== pointerId) return;
+    dragging = false;
+    try{ node.releasePointerCapture(pointerId); } catch(_){}
+    pointerId = null;
+  }
+  node.addEventListener('pointerup', end);
+  node.addEventListener('pointercancel', end);
+}
+
 
 const personNameEl = document.getElementById('personName');
 const personHandleEl = document.getElementById('personHandle');
@@ -515,8 +1028,9 @@ function getSelectionData(){
     personName: (personNameEl.value || "").trim(),
     personHandle: safeHandle(personHandleEl.value || ""),
     format: formatEl.value,
+    formation,
     themeIndex: Math.floor(Math.random()*THEMES.length),
-    players: selected.map(p => ({name:p.name, sector:p.sector, club:p.club})),
+    players: selected.map(p => ({name:p.name, sector:p.sector, club:p.club, starter: !!lineupPosByName[p.name]?.starter, pos: lineupPosByName[p.name]?.starter ? {x: lineupPosByName[p.name].x, y: lineupPosByName[p.name].y, role: lineupPosByName[p.name].role} : null })),
     createdAt: new Date().toISOString()
   };
 }
@@ -561,6 +1075,7 @@ function selectionSignature(data){
     personName: data.personName || '',
     personHandle: data.personHandle || '',
     format: data.format || 'story',
+    formation: data.formation || '',
     themeIndex: data.themeIndex ?? 0,
     players: (data.players || []).map(p => ({name:p.name, sector:p.sector, club:p.club}))
   });
@@ -644,12 +1159,15 @@ function renderSelected(){
     return `<div class="sel-sector"><div class="sel-sector-title">${sector}</div>${items.map(p=>`<div class="pill"><span>${p.name}</span><small>${p.club}</small></div>`).join('')||'<div class="club">Nenhum</div>'}</div>`;
   }).join('');
   drawPreview();
+  // keep lineup status updated
+  if(typeof renderLineup==='function') renderLineup();
 }
 function togglePlayer(name){
   const item=PLAYERS.find(p=>p.name===name);
   const exists=selected.some(s=>s.name===name);
   if(exists) {
     selected=selected.filter(s=>s.name!==name);
+    if(lineupPosByName[name]) delete lineupPosByName[name];
     renderPlayers(); renderSelected(); return;
   }
   if(selected.length>=26) return alert('Você só pode escolher 26 jogadores.');
@@ -710,6 +1228,155 @@ function getBlockMetrics(ctx,sectorName,items,width,height,isFeed){
   });
   return{headingSize,headingHeight,nameSize,clubSize,nameLine,clubLine,gapAfterName:8,gapAfterItem:10,prepared};
 }
+function getLineupPlayers(data){
+  return (data.players || []).filter(p=>p && p.starter && p.pos && typeof p.pos.x==='number' && typeof p.pos.y==='number');
+}
+function hasCompleteLineupData(data){
+  return getLineupPlayers(data).length === 11;
+}
+function drawPosterWithData(canvas, data, download=false){
+  if(hasCompleteLineupData(data)) return drawLineupArtWithData(canvas, data, download);
+  return drawArtWithData(canvas, data, download);
+}
+async function loadCanvasImage(src){
+  return await new Promise(resolve=>{
+    if(!src) return resolve(null);
+    const img = new Image();
+    img.onload = ()=>resolve(img);
+    img.onerror = ()=>resolve(null);
+    img.src = src;
+  });
+}
+async function drawLineupArtWithData(canvas, data, download=false){
+  const useFeed = (data.format || 'story') === 'feed';
+  const w = 1080, h = useFeed ? 1350 : 1920;
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+
+  const bg = ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0, '#ffd130');
+  bg.addColorStop(.55, '#f6c300');
+  bg.addColorStop(1, '#deae00');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,w,h);
+
+  ctx.globalAlpha = .06;
+  for(let i=-h;i<w;i+=36){
+    ctx.beginPath();
+    ctx.moveTo(i,0);
+    ctx.lineTo(i+h,h);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.fillStyle = '#1b8d4d';
+  ctx.font = `900 ${useFeed?96:116}px Georgia`;
+  ctx.textAlign = 'center';
+  ctx.fillText('BRASIL', w/2, useFeed?120:150);
+  ctx.fillStyle = '#1272c7';
+  ctx.font = `900 ${useFeed?28:34}px Arial`;
+  ctx.fillText('MEUS 11 TITULARES', w/2, useFeed?170:208);
+
+  const topY = useFeed?230:300;
+  const fieldTopW = useFeed?760:870, fieldBottomW = useFeed?980:1010;
+  const fieldH = useFeed?930:1410;
+  const leftTop = (w-fieldTopW)/2, rightTop = leftTop + fieldTopW;
+  const leftBottom = (w-fieldBottomW)/2, rightBottom = leftBottom + fieldBottomW;
+  const bottomY = topY + fieldH;
+
+  function fieldXAt(y, side){
+    const t = (y-topY)/fieldH;
+    const lx = leftTop + (leftBottom-leftTop)*t;
+    const rx = rightTop + (rightBottom-rightTop)*t;
+    return side==='left' ? lx : rx;
+  }
+  function mapPoint(px,py){
+    const y = topY + (py/100)*fieldH;
+    const lx = fieldXAt(y,'left');
+    const rx = fieldXAt(y,'right');
+    const x = lx + (px/100)*(rx-lx);
+    return {x,y};
+  }
+
+  ctx.strokeStyle = 'rgba(255,255,255,.82)';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(leftTop, topY);
+  ctx.lineTo(rightTop, topY);
+  ctx.lineTo(rightBottom, bottomY);
+  ctx.lineTo(leftBottom, bottomY);
+  ctx.closePath();
+  ctx.stroke();
+
+  const mid = mapPoint(50,50);
+  const circleR = useFeed?88:110;
+  ctx.beginPath(); ctx.arc(mid.x, mid.y, circleR, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(fieldXAt(mid.y,'left'), mid.y); ctx.lineTo(fieldXAt(mid.y,'right'), mid.y); ctx.stroke();
+
+  function drawBox(yPct, hPct, wPct){
+    const y1 = topY + (yPct/100)*fieldH;
+    const y2 = topY + ((yPct+hPct)/100)*fieldH;
+    const lx1 = fieldXAt(y1,'left'), rx1 = fieldXAt(y1,'right');
+    const lx2 = fieldXAt(y2,'left'), rx2 = fieldXAt(y2,'right');
+    const m1 = (lx1+rx1)/2, m2=(lx2+rx2)/2;
+    const half1=(rx1-lx1)*wPct/200, half2=(rx2-lx2)*wPct/200;
+    ctx.beginPath();
+    ctx.moveTo(m1-half1,y1); ctx.lineTo(m1+half1,y1); ctx.lineTo(m2+half2,y2); ctx.lineTo(m2-half2,y2); ctx.closePath(); ctx.stroke();
+  }
+  drawBox(0,16,42);
+  drawBox(84,16,42);
+  drawBox(0,7,18);
+  drawBox(93,7,18);
+
+  ctx.fillStyle = '#1b8d4d';
+  ctx.font = `900 ${useFeed?26:30}px Arial`;
+  ctx.textAlign = 'left';
+  ctx.fillText(`TÉC: ${(data.personName || 'VOCÊ').toUpperCase()}`, useFeed?44:56, useFeed?1290:1840);
+
+  const players = getLineupPlayers(data);
+  const prepared = await Promise.all(players.map(async p => ({
+    ...p,
+    _img: await loadCanvasImage((PLAYERS.find(x=>x.name===p.name) || {}).photo)
+  })));
+  prepared.forEach(p=>{
+    const pos = mapPoint(p.pos.x, p.pos.y);
+    const r = useFeed?44:54;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.22)';
+    ctx.shadowBlur = 16;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r+6, 0, Math.PI*2); ctx.fillStyle='#189f56'; ctx.fill();
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r+2, 0, Math.PI*2); ctx.fillStyle='#1272c7'; ctx.fill();
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI*2); ctx.closePath(); ctx.clip();
+    if(p._img){
+      ctx.drawImage(p._img, pos.x-r, pos.y-r, r*2, r*2);
+    } else {
+      ctx.fillStyle='#1272c7'; ctx.fillRect(pos.x-r, pos.y-r, r*2, r*2);
+    }
+    ctx.restore();
+    ctx.fillStyle = '#1272c7';
+    ctx.textAlign='center';
+    const label = String(p.name || '').toUpperCase();
+    const labelSize = useFeed?20:24;
+    ctx.font = `900 ${labelSize}px Arial`;
+    const lines = wrapLines(ctx, label, useFeed?170:200).slice(0,2);
+    let ly = pos.y + r + (useFeed?30:36);
+    lines.forEach(line=>{
+      ctx.fillText(line, pos.x, ly);
+      ly += useFeed?22:26;
+    });
+  });
+
+  if(download){
+    const link=document.createElement('a');
+    link.href=canvas.toDataURL('image/png');
+    link.download=`escalacao-${data.format||'story'}.png`;
+    link.click();
+  }
+}
+
 function drawArtWithData(canvas, data, download=false){
   const list = data.players || [];
   const theme = THEMES[data.themeIndex || 0] || THEMES[0];
@@ -813,7 +1480,7 @@ async function renderMural(){
     `).join('')}</div>`;
     items.forEach((item, idx)=>{
       const c = document.getElementById(`postCanvas_${idx}`);
-      drawArtWithData(c, item, false);
+      drawPosterWithData(c, item, false);
     });
     muralRoot.querySelectorAll('[data-open]').forEach(btn=>btn.onclick=()=>window.open(buildShareUrl(items[Number(btn.dataset.open)]), '_blank'));
     muralRoot.querySelectorAll('[data-copy]').forEach(btn=>btn.onclick=()=>copyText(buildShareUrl(items[Number(btn.dataset.copy)])));
@@ -854,6 +1521,15 @@ async function showSharedIfAny(){
   }
 
   if(!data || !Array.isArray(data.players)) return;
+
+  // Restore lineup from shared/published payload (starter + pos saved in players objects)
+  lineupPosByName = {};
+  (data.players || []).forEach(p=>{
+    if(p && p.starter && p.pos && typeof p.pos.x==='number' && typeof p.pos.y==='number'){
+      lineupPosByName[p.name] = { starter:true, role: p.pos.role || (p.sector==='Goleiros'?'GK':(p.sector==='Defensores'?'DEF':(p.sector==='Meio-campistas'?'MID':'ATT'))), x: p.pos.x, y: p.pos.y };
+    }
+  });
+
   document.getElementById('montador').insertAdjacentHTML('beforebegin', `
     <div class="viewer-card panel">
       <h3>Convocação compartilhada</h3>
@@ -866,7 +1542,7 @@ async function showSharedIfAny(){
     </div>
   `);
   const c = document.getElementById('sharedCanvas');
-  drawArtWithData(c, data, false);
+  await drawPosterWithData(c, data, false);
   document.getElementById('copySharedLink').onclick = () => copyText(window.location.href);
 }
 searchEl.addEventListener('input', renderPlayers);
@@ -875,7 +1551,7 @@ titleEl.addEventListener('input', drawPreview);
 personNameEl.addEventListener('input', drawPreview);
 personHandleEl.addEventListener('input', drawPreview);
 document.getElementById('generateBtn').onclick = ()=>drawPreview();
-document.getElementById('downloadBtn').onclick = ()=>{if(!validateForPublish()) return; drawArt(document.createElement('canvas'), true);};
+document.getElementById('downloadBtn').onclick = async ()=>{if(!validateForPublish()) return; await drawPosterWithData(document.createElement('canvas'), getSelectionData(), true);};
 document.getElementById('shareBtn').onclick = async ()=>{
   if(!validateForPublish()) return;
   try {
@@ -883,7 +1559,7 @@ document.getElementById('shareBtn').onclick = async ()=>{
     const url = buildShareUrl(saved);
     shareUrlBox.textContent = url;
     const c=document.createElement('canvas');
-    drawArtWithData(c, saved, false);
+    await drawPosterWithData(c, saved, false);
     c.toBlob(async blob=>{
       const file=new File([blob],`convocacao-${saved.format}.png`,{type:'image/png'});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -911,11 +1587,37 @@ document.getElementById('copyLinkBtn').onclick = async ()=>{
     alert('Não consegui gerar o link único no Supabase.');
   }
 };
-document.getElementById('clearBtn').onclick = ()=>{selected=[]; currentPublishedId=null; currentPublishedSignature=null; renderPlayers(); renderSelected();};
+document.getElementById('clearBtn').onclick = ()=>{selected=[]; lineupPosByName={}; currentPublishedId=null; currentPublishedSignature=null; renderPlayers(); renderSelected(); renderLineup();};
+function validateLineupComplete(){
+  if(!validateForPublish()) return false;
+  const counts = countStartersByRole();
+  const req = requirementsForFormation(formation);
+  if(counts.GK!==req.GK || counts.DEF!==req.DEF || counts.MID!==req.MID || counts.ATT!==req.ATT || counts.TOTAL!==11){
+    alert(`Complete os 11 titulares na formação ${formation} antes de compartilhar ou publicar.`);
+    return false;
+  }
+  return true;
+}
+async function shareCurrentLineup(){
+  if(!validateLineupComplete()) return;
+  return document.getElementById('shareBtn').onclick();
+}
+async function publishCurrentLineup(){
+  if(!validateLineupComplete()) return;
+  return publishCurrent();
+}
+async function copyCurrentLineupLink(){
+  if(!validateLineupComplete()) return;
+  return document.getElementById('copyLinkBtn').onclick();
+}
+document.getElementById('shareLineupBtn').onclick = shareCurrentLineup;
+document.getElementById('publishLineupBtn').onclick = publishCurrentLineup;
+document.getElementById('copyLineupLinkBtn').onclick = copyCurrentLineupLink;
 (async ()=>{
   await showSharedIfAny();
   renderPlayers();
   renderSelected();
+  renderLineup();
   await renderMural();
 })();
 </script>
